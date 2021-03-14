@@ -141,11 +141,11 @@ void loop()
 
         // Print temperature on serial monitor
         Serial.print("Temperature (C): ");
-        Serial.println(temperatura);
+        Serial.println(temperature);
 
         //Publishing CO2 and Temperature values to the broker
-        client.publish(co2Topic, ppmCO2);
-        client.publish(temperatureTopic, temperature);
+        client.publish(co2Topic, (char *)ppmCO2);
+        client.publish(temperatureTopic, (char *)temperature);
 
         // Updating time value to control acquisition time loop
         timer = millis();
