@@ -8,21 +8,21 @@ services:
     image: eclipse-mosquitto
     restart: unless-stopped
     ports:
-      - 1883:1883
+      - 9000:1883
     environment: 
       - MOSQUITTO_USERNAME=${MOSQUITTO_USERNAME}
       - MOSQUITTO_PASSWORD=${MOSQUITTO_PASSWORD}
     volumes:
       - ./volumes/mosquitto/data:/mosquitto/data
       - ./volumes/mosquitto/log:/mosquitto/log
-      - ./services/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./volumes/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
   grafana:
     image: grafana/grafana:latest-ubuntu
     container_name: grafana
     restart: unless-stopped
     user: "0" 
     ports:
-      - '3000:3000'
+      - '9001:3000'
     volumes:
       - ./volumes/grafana/data:/var/lib/grafana
       - ./volumes/grafana/log:/var/log/grafana
@@ -63,6 +63,18 @@ services:
       environment: 
         - TZ=Europe/Madrid
       ports:
-        - 1880:1880
+        - 9002:1880
       volumes:
         - ./volumes/nodered/data:/data
+  caddy:
+     image: caddy
+     ports:
+     - "80:80"
+     - "443:443"
+     volumes:
+     - ./volumes/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+     - ./volumes/caddy/data/caddy/data:/data
+     - ./volumes/caddy/data/caddy/config:/config
+     restart: unless-stopped
+     container_name: caddy
+
