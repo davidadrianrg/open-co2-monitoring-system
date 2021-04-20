@@ -12,11 +12,10 @@ Author: David Adrián Rodríguez García
 #include <MHZ19.h>          //Library to manage CO2 sensor
 #include <SoftwareSerial.h> //Library to use another pins than RX and TX to UART communication
 #include <PubSubClient.h>   //Library to manage MQTT connection to the broker
+#include "keys.h"            //File containing the brokerIP, brokerPort, mqtt_user and mqtt_password
 
-#define RX_PIN 7
-#define TX_PIN 6
-#define brokerIP "X.X.X.X" //MQTT Broker IP
-#define brokerPort 1883    //MQTT Broker Port
+#define RX_PIN 4
+#define TX_PIN 5
 #define clientId "Smart-CO2-Sensor"
 #define mqtt_topic "mqtt"                        //This is the [root topic]
 #define co2Topic "co2sensor/co2"                 //MQTT topic to publish CO2 ppm values
@@ -29,6 +28,10 @@ PubSubClient client(espClient);            //Intializing MQTT client
 
 //Counter to take into account the time delay between different CO2 acquisition values
 unsigned long timer = 0;
+
+//Char variables for the mqtt messages
+char msg_co2[6];
+char msg_temperature[3];
 
 //Function to setup sensor
 void setupSensor()
@@ -79,7 +82,7 @@ void reconnect()
     {
         Serial.print("Attempting MQTT connection...");
         // Attempt to connect
-        if (client.connect(clientId))
+        if (client.connect(clientId, mqtt_username, mqtt_password))
         {
             Serial.println("connected");
             // Once connected, publish an announcement...
@@ -100,7 +103,7 @@ void reconnect()
 
 void callback(char *topic, byte *payload, unsigned int length)
 {
-    //MQTT Callback, pending to implement
+    //TODO MQTT Callback, pending to implement if needed
 }
 
 void setup()
@@ -114,7 +117,7 @@ void setup()
     setupWiFi();
 
     //Setting up MQTT connection with the broker
-    client.setServer(brokerIP, 1883);
+    client.setServer(brokerIP, brokerPort);
     client.setCallback(callback);
 }
 
@@ -125,7 +128,9 @@ void loop()
     {
         reconnect();
     }
-    // Take a new CO2 value each 2 seconds
+    //Implement MQTT loop to receive incoming mesagges
+    client.loop();
+    //Take a new CO2 value each 2 seconds
     if (millis() - timer >= 2000)
     {
 
@@ -143,9 +148,13 @@ void loop()
         Serial.print("Temperature (C): ");
         Serial.println(temperature);
 
+        //Parsing data for the mqtt payload
+        snprintf(msg_co2, 6, "%i", ppmCO2);
+        snprintf(msg_temperature, 3, "%i", temperature);
+
         //Publishing CO2 and Temperature values to the broker
-        client.publish(co2Topic, (char *)ppmCO2);
-        client.publish(temperatureTopic, (char *)temperature);
+        client.publish(co2Topic, msg_co2);
+        client.publish(temperatureTopic, msg_temperature);
 
         // Updating time value to control acquisition time loop
         timer = millis();
