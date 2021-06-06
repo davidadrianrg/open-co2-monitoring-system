@@ -1,4 +1,4 @@
 .vscode
 .env
-test
+test/config.json
 co2-sensor/keys.h
