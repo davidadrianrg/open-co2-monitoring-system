@@ -20,6 +20,7 @@ Author: David Adrián Rodríguez García
 #define mqtt_topic "mqtt"                        //This is the [root topic]
 #define co2Topic "co2sensor/co2"                 //MQTT topic to publish CO2 ppm values
 #define temperatureTopic "co2sensor/temperature" //MQTT topic to publish temperature values
+#define samplingTime 120000                     //Setting the sampling time to measure CO2
 
 MHZ19 myMHZ19;                             // Constructor for MHZ19 library
 SoftwareSerial softSerial(RX_PIN, TX_PIN); // Create a software serial instead of using hardware serial
@@ -131,7 +132,7 @@ void loop()
     //Implement MQTT loop to receive incoming mesagges
     client.loop();
     //Take a new CO2 value each 2 seconds
-    if (millis() - timer >= 2000)
+    if (millis() - timer >= samplingTime)
     {
 
         // Get the CO2 ppm values from the sensor
