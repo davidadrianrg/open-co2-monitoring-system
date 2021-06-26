@@ -7,6 +7,7 @@ services:
     container_name: mosquitto
     image: eclipse-mosquitto
     restart: unless-stopped
+    user: 1000:1000
     ports:
       - 9000:1883
     environment: 
