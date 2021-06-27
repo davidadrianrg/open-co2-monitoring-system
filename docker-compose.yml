@@ -7,7 +7,7 @@ services:
     container_name: mosquitto
     image: eclipse-mosquitto
     restart: unless-stopped
-    user: 1000:1000
+    user: root
     ports:
       - 9000:1883
     environment: 
@@ -17,6 +17,7 @@ services:
       - ./volumes/mosquitto/data:/mosquitto/data
       - ./volumes/mosquitto/log:/mosquitto/log
       - ./volumes/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./volumes/mosquitto/config/passwd:/mosquitto/config/passwd:ro
   grafana:
     image: grafana/grafana:latest-ubuntu
     container_name: grafana
