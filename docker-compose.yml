@@ -17,7 +17,7 @@ services:
       - ./volumes/mosquitto/data:/mosquitto/data
       - ./volumes/mosquitto/log:/mosquitto/log
       - ./volumes/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
-      - ./volumes/mosquitto/config/passwd:/mosquitto/config/passwd:ro
+      - ./volumes/mosquitto/config/passwd:/mosquitto/config/passwd
   grafana:
     image: grafana/grafana:latest-ubuntu
     container_name: grafana
